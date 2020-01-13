@@ -21,7 +21,7 @@ public final class Argon2 {
   }
 
   public static boolean verify(String encoded, byte[] password, Type type) {
-    return Argon2Native.argon2_verify(encoded, password, type.nativeValue) == Argon2Native.OK;
+    return Argon2Native.verify(encoded, password, type.nativeValue) == Argon2Native.OK;
   }
 
   public static class Builder {
@@ -86,16 +86,16 @@ public final class Argon2 {
   public Result hash(byte[] password, byte[] salt) throws Argon2Exception {
     StringBuffer encoded = new StringBuffer();
     byte[]       hash    = new byte[hashLength];
-    int          result  = Argon2Native.argon2_hash(t, m, parallelism,
-                                                    password,
-                                                    salt,
-                                                    hash,
-                                                    encoded,
-                                                    type.nativeValue,
-                                                    version.nativeValue);
+    int          result  = Argon2Native.hash(t, m, parallelism,
+                                             password,
+                                             salt,
+                                             hash,
+                                             encoded,
+                                             type.nativeValue,
+                                             version.nativeValue);
 
     if (result != Argon2Native.OK) {
-      throw new Argon2Exception(result, Argon2Native.argon2_error_string(result));
+      throw new Argon2Exception(result, Argon2Native.resultToString(result));
     }
 
     return new Result(encoded.toString(), hash);

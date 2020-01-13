@@ -7,36 +7,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef org_signal_argon2_Argon2Native_OK
+#define org_signal_argon2_Argon2Native_OK 0L
 /*
  * Class:     org_signal_argon2_Argon2Native
- * Method:    runTests
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_signal_argon2_Argon2Native_runTests
-  (JNIEnv *, jclass);
-
-/*
- * Class:     org_signal_argon2_Argon2Native
- * Method:    argon2_hash
+ * Method:    hash
  * Signature: (III[B[B[BLjava/lang/StringBuffer;II)I
  */
-JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1hash
+JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_hash
   (JNIEnv *, jclass, jint, jint, jint, jbyteArray, jbyteArray, jbyteArray, jobject, jint, jint);
 
 /*
  * Class:     org_signal_argon2_Argon2Native
- * Method:    argon2_verify
+ * Method:    verify
  * Signature: (Ljava/lang/String;[BI)I
  */
-JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1verify
+JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_verify
   (JNIEnv *, jclass, jstring, jbyteArray, jint);
 
 /*
  * Class:     org_signal_argon2_Argon2Native
- * Method:    argon2_error_string
+ * Method:    resultToString
  * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_signal_argon2_Argon2Native_argon2_1error_1string
+JNIEXPORT jstring JNICALL Java_org_signal_argon2_Argon2Native_resultToString
   (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus

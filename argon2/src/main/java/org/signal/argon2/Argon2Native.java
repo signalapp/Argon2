@@ -8,17 +8,17 @@ final class Argon2Native {
     System.loadLibrary("argon2");
   }
 
-  static native int argon2_hash(int t_cost,
-                                int m_cost,
-                                int parallelism,
-                                byte[] pwd,
-                                byte[] salt,
-                                byte[] hash,
-                                StringBuffer encoded,
-                                int argon2_type,
-                                int version);
+  static native int hash(int tCost,
+                         int mCost,
+                         int parallelism,
+                         byte[] pwd,
+                         byte[] salt,
+                         byte[] hash,
+                         StringBuffer encoded,
+                         int argon2Type,
+                         int version);
 
-  static native int argon2_verify(String encoded, byte[] pwd, int argon2_type);
+  static native int verify(String encoded, byte[] pwd, int argon2Type);
 
-  static native String argon2_error_string(int argonResult);
+  static native String resultToString(int argonResult);
 }

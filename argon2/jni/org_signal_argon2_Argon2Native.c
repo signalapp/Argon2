@@ -5,7 +5,7 @@
 
 #define ENCODED_LEN 512
 
-JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1hash
+JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_hash
   (JNIEnv *env,
    jclass clazz,
    jint t,
@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1hash
   return ret;
 }
 
-JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1verify
+JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_verify
   (JNIEnv *env, jclass clazz, jstring jEncoded, jbyteArray jPwd, jint argon_type)
 {
   const char  *encoded  = (*env)->GetStringUTFChars(env, jEncoded, NULL);
@@ -64,7 +64,7 @@ JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_argon2_1verify
   return ret;
 }
 
-JNIEXPORT jstring JNICALL Java_org_signal_argon2_Argon2Native_argon2_1error_1string
+JNIEXPORT jstring JNICALL Java_org_signal_argon2_Argon2Native_resultToString
   (JNIEnv *env, jclass clazz, jint argonResult)
 {
   return (*env)->NewStringUTF(env, argon2_error_message(argonResult));
