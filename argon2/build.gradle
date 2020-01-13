@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply from: 'deploy.gradle'
 
 android {
     compileSdkVersion 28
@@ -6,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName '0x13'
     }
 
     sourceSets {
