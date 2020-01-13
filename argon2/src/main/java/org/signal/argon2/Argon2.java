@@ -4,11 +4,11 @@ import java.util.Locale;
 
 public final class Argon2 {
 
-  private final int     t;
-  private final int     m;
-  private final int     parallelism;
-  private final int     hashLength;
-  private final Type    type;
+  private final int          t;
+  private final int          m;
+  private final int          parallelism;
+  private final int          hashLength;
+  private final Type type;
   private final Version version;
 
   private Argon2(Builder builder) {
@@ -25,23 +25,22 @@ public final class Argon2 {
   }
 
   public static class Builder {
-    private int     t           = 3;
-    private int     m           = 1 << 12;
-    private int     parallelism = 1;
-    private int     hashLength  = 32;
-    private Type    type        = Type.Argon2i;
-    private Version version     = Version.ARGON2_VERSION_NUMBER;
+    private final Version version;
+    private       int     t           = 3;
+    private       int     m           = 1 << 12;
+    private       int     parallelism = 1;
+    private       int     hashLength  = 32;
+    private       Type    type        = Type.Argon2i;
 
-    public Builder type(Type type) {
-      this.type = type;
-      return this;
+    public Builder(Version version) {
+      this.version = version;
     }
 
     /**
-     * Argon2 version (defaults to the most recent version, currently 13)
+     * Type of Argon to use {@link Type#Argon2i} is the default.
      */
-    public Builder version(Version version) {
-      this.version = version;
+    public Builder type(Type type) {
+      this.type = type;
       return this;
     }
 
@@ -55,14 +54,21 @@ public final class Argon2 {
 
     /**
      * Sets the memory usage of 2^{@param n} KiB (default 12)
-     * <p>
+     *
      * @param n This function accepts [0..30]. 0 is 1 KiB and 30 is 1 TiB.
      */
-    public Builder memory(int n) {
+    public Builder memoryCost(int n) {
       if (n <  0) throw new IllegalArgumentException("n too small, minimum 0");
       if (n > 30) throw new IllegalArgumentException("n too high, maximum 30");
       this.m = 1 << n;
       return this;
+    }
+
+    /**
+     * Sets the memory usage using the {@link MemoryCost} enum.
+     */
+    public Builder memoryCost(MemoryCost memoryCost) {
+      return memoryCost(memoryCost.m);
     }
 
     /**
@@ -73,6 +79,9 @@ public final class Argon2 {
       return this;
     }
 
+    /**
+     * Output hash length, default 32.
+     */
     public Builder hashLength(int hashLength) {
       this.hashLength = hashLength;
       return this;
@@ -99,36 +108,6 @@ public final class Argon2 {
     }
 
     return new Result(encoded.toString(), hash);
-  }
-
-  /**
-   * Argon2 primitive type.
-   */
-  public enum Type {
-    Argon2d(0),
-    Argon2i(1),
-    Argon2id(2);
-
-    private final int nativeValue;
-
-    Type(int nativeValue) {
-      this.nativeValue = nativeValue;
-    }
-  }
-
-  /**
-   * Version of the Argon2 algorithm.
-   */
-  public enum Version {
-    ARGON2_VERSION_10(0x10),
-    ARGON2_VERSION_13(0x13),
-    ARGON2_VERSION_NUMBER(0x13);
-
-    private final int nativeValue;
-
-    Version(int nativeValue) {
-      this.nativeValue = nativeValue;
-    }
   }
 
   public final class Result {

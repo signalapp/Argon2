@@ -1,32 +1,29 @@
-package org.signal.argon2.testbench;
+package org.signal.argon2;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.signal.argon2.Argon2;
-import org.signal.argon2.Argon2Exception;
-
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.signal.argon2.Argon2.Type.Argon2i;
-import static org.signal.argon2.Argon2.Type.Argon2id;
+import static org.signal.argon2.TestUtils.ascii;
+import static org.signal.argon2.Type.Argon2i;
+import static org.signal.argon2.Type.Argon2id;
 
 /**
  * Cases ported from test.c
  */
 @RunWith(AndroidJUnit4.class)
-public final class ArgonTest {
+public final class Argon2Test {
 
   @Test
   public void argon_version_10_2i() throws Argon2Exception {
-    Argon2.Version version = Argon2.Version.ARGON2_VERSION_10;
-    Argon2.Type type = Argon2i;
+    Version version = Version.V10;
+    Type    type    = Argon2i;
 
     hashtest(version, 2, 16, 1, "password", "somesalt",
       "f6c4db4a54e2a370627aff3db6176b94a2a209a62c8e36152711802f7b30c694",
@@ -69,9 +66,8 @@ public final class ArgonTest {
 
   @Test
   public void argon_version_latest_2i() throws Argon2Exception {
-
-    Argon2.Version version = Argon2.Version.ARGON2_VERSION_NUMBER;
-    Argon2.Type type = Argon2i;
+    Version version = Version.LATEST;
+    Type    type    = Argon2i;
 
     hashtest(version, 2, 16, 1, "password", "somesalt",
       "c1628832147d9720c5bd1cfd61367078729f6dfb6f8fea9ff98158e0d7816ed0",
@@ -115,8 +111,8 @@ public final class ArgonTest {
 
   @Test
   public void argon_version_latest_2id() throws Argon2Exception {
-    Argon2.Version version = Argon2.Version.ARGON2_VERSION_NUMBER;
-    Argon2.Type type = Argon2id;
+    Version version = Version.LATEST;
+    Type    type    = Argon2id;
 
     hashtest(version, 2, 16, 1, "password", "somesalt",
       "09316115d5cf24ed5a15a31a3ba326e5cf32edc24702987c02b6566f61913cf7",
@@ -159,21 +155,20 @@ public final class ArgonTest {
    * encoded output matches expected
    * Argon2.verify() correctly verifies value
    */
-  private static void hashtest(Argon2.Version version, int t, int m, int p, String password, String salt, String hexref, String mcRef, Argon2.Type type) throws Argon2Exception {
-    Argon2 argon2 = new Argon2.Builder()
-                      .version(version)
-                      .type(type)
-                      .iterations(t)
-                      .memory(m)
-                      .parallelism(p)
-                      .hashLength(32)
-                      .build();
+  private static void hashtest(Version version, int t, int m, int p, String password, String salt, String hexref, String mcRef, Type type) throws Argon2Exception {
+    Argon2 argon2 = new Argon2.Builder(version)
+                              .type(type)
+                              .iterations(t)
+                              .memoryCost(m)
+                              .parallelism(p)
+                              .hashLength(32)
+                              .build();
 
     Argon2.Result result = argon2.hash(ascii(password), ascii(salt));
 
     assertEquals(hexref, result.getHashHex());
-    assertArrayEquals(hexToBytes(hexref), result.getHash());
-    if (version != Argon2.Version.ARGON2_VERSION_10) {
+    assertArrayEquals(TestUtils.hexToBytes(hexref), result.getHash());
+    if (version != Version.V10) {
       assertEquals(mcRef, result.getEncoded());
     }
 
@@ -229,9 +224,9 @@ public final class ArgonTest {
 
   @Test
   public void memory_too_little() {
-    Argon2 argon2 = new Argon2.Builder()
+    Argon2 argon2 = new Argon2.Builder(Version.LATEST)
                               .type(Argon2id)
-                              .memory(2)
+                              .memoryCost(2)
                               .build();
 
     assertThatThrownBy(() -> argon2.hash(ascii("password"), ascii("diffsalt")))
@@ -241,7 +236,7 @@ public final class ArgonTest {
 
   @Test
   public void salt_too_short() {
-    Argon2 argon2 = new Argon2.Builder()
+    Argon2 argon2 = new Argon2.Builder(Version.LATEST)
                               .type(Argon2id)
                               .build();
 
@@ -252,32 +247,19 @@ public final class ArgonTest {
 
   @Test
   public void memory_too_low_in_builder() {
-    Argon2.Builder builder = new Argon2.Builder()
+    Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
                                        .type(Argon2id);
 
-    assertThatThrownBy(() -> builder.memory(-1))
+    assertThatThrownBy(() -> builder.memoryCost(-1))
     .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   public void memory_too_high_in_builder() {
-    Argon2.Builder builder = new Argon2.Builder()
+    Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
                                        .type(Argon2id);
 
-    assertThatThrownBy(() -> builder.memory(31))
+    assertThatThrownBy(() -> builder.memoryCost(31))
     .isExactlyInstanceOf(IllegalArgumentException.class);
-  }
-
-  private static byte[] ascii(String password) {
-    return password.getBytes(StandardCharsets.US_ASCII);
-  }
-
-  private static byte[] hexToBytes(String hex) {
-    byte[] data = new byte[hex.length() / 2];
-    for (int i = 0; i < data.length; i ++) {
-      data[i] = (byte) ((Character.digit(hex.charAt(i * 2), 16) << 4)
-                       + Character.digit(hex.charAt(i * 2 + 1), 16));
-    }
-    return data;
   }
 }
