@@ -1,0 +1,16 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName '0x13'
+    }
+
+    sourceSets {
+        main.jniLibs.srcDirs = ['libs']
+    }
+}
