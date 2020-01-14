@@ -1,3 +1,4 @@
-include ':app'
-include ':argon2'
+include ':android'
+include ':android:app'
+include ':android:argon2'
 rootProject.name='Argon2Android'

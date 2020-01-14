@@ -14,3 +14,5 @@
 .cxx
 app/obj
 argon2/obj
+android/app/obj
+android/argon2/obj
