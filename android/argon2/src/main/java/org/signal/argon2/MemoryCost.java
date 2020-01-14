@@ -25,4 +25,9 @@ public enum MemoryCost {
   MemoryCost(int m) {
     this.m = m;
   }
+
+  /** Number of bytes */
+  int toBytes() {
+    return 1 << (m + 10);
+  }
 }
