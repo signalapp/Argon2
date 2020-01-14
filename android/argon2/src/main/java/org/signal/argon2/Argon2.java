@@ -4,11 +4,11 @@ import java.util.Locale;
 
 public final class Argon2 {
 
-  private final int          t;
-  private final int          m;
-  private final int          parallelism;
-  private final int          hashLength;
-  private final Type type;
+  private final int     t;
+  private final int     m;
+  private final int     parallelism;
+  private final int     hashLength;
+  private final Type    type;
   private final Version version;
 
   private Argon2(Builder builder) {
@@ -26,11 +26,12 @@ public final class Argon2 {
 
   public static class Builder {
     private final Version version;
-    private       int     t           = 3;
-    private       int     m           = 1 << 12;
-    private       int     parallelism = 1;
-    private       int     hashLength  = 32;
-    private       Type    type        = Type.Argon2i;
+
+    private int  t           = 3;
+    private int  m           = 1 << 12;
+    private int  parallelism = 1;
+    private int  hashLength  = 32;
+    private Type type        = Type.Argon2i;
 
     public Builder(Version version) {
       this.version = version;
@@ -134,25 +135,25 @@ public final class Argon2 {
     @Override
     public String toString() {
       return String.format(Locale.US,
-        "Type:           %s\n" +
-          "Iterations:     %d\n" +
-          "Memory:         %d KiB\n" +
-          "Parallelism:    %d\n" +
-          "Hash:           %s\n" +
-          "Encoded:        %s\n",
-        type,
-        t,
-        m,
-        parallelism,
-        getHashHex(),
-        encoded);
+                           "Type:           %s%n" +
+                           "Iterations:     %d%n" +
+                           "Memory:         %d KiB%n" +
+                           "Parallelism:    %d%n" +
+                           "Hash:           %s%n" +
+                           "Encoded:        %s%n",
+                           type,
+                           t,
+                           m,
+                           parallelism,
+                           getHashHex(),
+                           encoded);
     }
   }
 
   private static String toHex(byte[] hash) {
     StringBuilder stringBuilder = new StringBuilder(hash.length * 2);
     for (byte b : hash) {
-      stringBuilder.append(String.format("%02x", b));
+      stringBuilder.append(String.format(Locale.US, "%02x", b));
     }
     return stringBuilder.toString();
   }

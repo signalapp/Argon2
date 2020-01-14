@@ -27,7 +27,7 @@ public enum MemoryCost {
   }
 
   /** Number of bytes */
-  int toBytes() {
+  public int toBytes() {
     return 1 << (m + 10);
   }
 }
