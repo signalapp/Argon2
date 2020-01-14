@@ -4,7 +4,7 @@ Argon2 Library
 Wrapper around the [reference C implementation of Argon2](https://github.com/P-H-C/phc-winner-argon2).
 
 Android Usage
-==
+--
 
 ```gradle
  implementation 'org.signal:argon2:13.0'
