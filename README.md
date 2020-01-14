@@ -7,12 +7,12 @@ Android Usage
 --
 
 ```gradle
- implementation 'org.signal:argon2:13.0'
+implementation 'org.signal:argon2:13.0'
 ```
 
 ```java
 Argon2 argon2 = new Argon2.Builder(Version.V13)
-                          .type(Argon2id)
+                          .type(Type.Argon2id)
                           .memoryCost(MemoryCost.MiB_32)
                           .parallelism(1)
                           .iterations(1)
