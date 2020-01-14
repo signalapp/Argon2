@@ -230,8 +230,8 @@ public final class Argon2Test {
                               .build();
 
     assertThatThrownBy(() -> argon2.hash(ascii("password"), ascii("diffsalt")))
-    .isExactlyInstanceOf(Argon2Exception.class)
-    .hasMessageContaining("Memory cost is too small");
+      .isExactlyInstanceOf(Argon2Exception.class)
+      .hasMessageContaining("Memory cost is too small");
   }
 
   @Test
@@ -241,25 +241,7 @@ public final class Argon2Test {
                               .build();
 
     assertThatThrownBy(() -> argon2.hash(ascii("password"), ascii("s")))
-    .isExactlyInstanceOf(Argon2Exception.class)
-    .hasMessageContaining("Salt is too short");
-  }
-
-  @Test
-  public void memory_too_low_in_builder() {
-    Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
-                                       .type(Argon2id);
-
-    assertThatThrownBy(() -> builder.memoryCost(-1))
-    .isExactlyInstanceOf(IllegalArgumentException.class);
-  }
-
-  @Test
-  public void memory_too_high_in_builder() {
-    Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
-                                       .type(Argon2id);
-
-    assertThatThrownBy(() -> builder.memoryCost(31))
-    .isExactlyInstanceOf(IllegalArgumentException.class);
+      .isExactlyInstanceOf(Argon2Exception.class)
+      .hasMessageContaining("Salt is too short");
   }
 }

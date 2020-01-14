@@ -9,10 +9,7 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+obj
 /captures
 .externalNativeBuild
 .cxx
-app/obj
-argon2/obj
-android/app/obj
-android/argon2/obj
