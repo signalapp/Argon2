@@ -4,20 +4,20 @@ import java.util.Locale;
 
 public final class Argon2 {
 
-  private final int     t;
-  private final int     m;
+  private final int     tCostIterations;
+  private final int     mCostKiB;
   private final int     parallelism;
   private final int     hashLength;
   private final Type    type;
   private final Version version;
 
   private Argon2(Builder builder) {
-    this.t           = builder.t;
-    this.m           = builder.m;
-    this.parallelism = builder.parallelism;
-    this.hashLength  = builder.hashLength;
-    this.type        = builder.type;
-    this.version     = builder.version;
+    this.tCostIterations = builder.tCostIterations;
+    this.mCostKiB        = builder.mCostKiB;
+    this.parallelism     = builder.parallelism;
+    this.hashLength      = builder.hashLength;
+    this.type            = builder.type;
+    this.version         = builder.version;
   }
 
   public static boolean verify(String encoded, byte[] password, Type type) {
@@ -27,11 +27,11 @@ public final class Argon2 {
   public static class Builder {
     private final Version version;
 
-    private int  t           = 3;
-    private int  m           = 1 << 12;
-    private int  parallelism = 1;
-    private int  hashLength  = 32;
-    private Type type        = Type.Argon2i;
+    private int  tCostIterations = 3;
+    private int  mCostKiB        = 1 << 12;
+    private int  parallelism     = 1;
+    private int  hashLength      = 32;
+    private Type type            = Type.Argon2i;
 
     public Builder(Version version) {
       this.version = version;
@@ -58,10 +58,19 @@ public final class Argon2 {
      *
      * @param n This function accepts [0..30]. 0 is 1 KiB and 30 is 1 TiB.
      */
-    public Builder memoryCost(int n) {
+    public Builder memoryCostOrder(int n) {
       if (n <  0) throw new IllegalArgumentException("n too small, minimum 0");
       if (n > 30) throw new IllegalArgumentException("n too high, maximum 30");
-      this.m = 1 << n;
+      return memoryCostKiB(1 << n);
+    }
+
+    /**
+     * Sets the memory usage of {@param kib} KiB.
+     */
+    public Builder memoryCostKiB(int kib) {
+      if (kib      < 4) throw new IllegalArgumentException("kib too small, minimum 4");
+      if (kib % 4 != 0) throw new IllegalArgumentException("kib must be multiple of 4");
+      this.mCostKiB = kib;
       return this;
     }
 
@@ -69,14 +78,14 @@ public final class Argon2 {
      * Sets the memory usage using the {@link MemoryCost} enum.
      */
     public Builder memoryCost(MemoryCost memoryCost) {
-      return memoryCost(memoryCost.m);
+      return memoryCostKiB(memoryCost.getKiB());
     }
 
     /**
      * Sets the number of iterations to {@param n} (default = 3)
      */
     public Builder iterations(int n) {
-      this.t = n;
+      this.tCostIterations = n;
       return this;
     }
 
@@ -96,7 +105,7 @@ public final class Argon2 {
   public Result hash(byte[] password, byte[] salt) throws Argon2Exception {
     StringBuffer encoded = new StringBuffer();
     byte[]       hash    = new byte[hashLength];
-    int          result  = Argon2Native.hash(t, m, parallelism,
+    int          result  = Argon2Native.hash(tCostIterations, mCostKiB, parallelism,
                                              password,
                                              salt,
                                              hash,
@@ -142,8 +151,8 @@ public final class Argon2 {
                            "Hash:           %s%n" +
                            "Encoded:        %s%n",
                            type,
-                           t,
-                           m,
+                           tCostIterations,
+                           mCostKiB,
                            parallelism,
                            getHashHex(),
                            encoded);

@@ -1,33 +1,31 @@
 package org.signal.argon2;
 
 /**
- * Some useful values for use in the {@link Argon2.Builder#memoryCost(MemoryCost)} method for readability.
+ * For use in the {@link Argon2.Builder#memoryCost(MemoryCost)} method for readability.
  */
-public enum MemoryCost {
-  KiB_8(3),
-  KiB_16(4),
-  KiB_32(5),
-  KiB_64(6),
-  KiB_128(7),
-  KiB_256(8),
-  KiB_512(9),
-  MiB_1(10),
-  MiB_2(11),
-  MiB_4(12),
-  MiB_8(13),
-  MiB_16(14),
-  MiB_32(15),
-  MiB_64(16),
-  MiB_128(17);
+public final class MemoryCost {
 
-  int m;
+  private final int kib;
 
-  MemoryCost(int m) {
-    this.m = m;
+  public static MemoryCost KiB(int kib) {
+    return new MemoryCost(kib);
+  }
+
+  public static MemoryCost MiB(int mib) {
+    return new MemoryCost(mib * 1024);
+  }
+
+  private MemoryCost(int kib) {
+    this.kib = kib;
   }
 
   /** Number of bytes */
-  public int toBytes() {
-    return 1 << (m + 10);
+  public long toBytes() {
+    return kib * 1024L;
+  }
+
+  /** Number of Kibibytes */
+  public int getKiB() {
+    return kib;
   }
 }

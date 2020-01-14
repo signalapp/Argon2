@@ -18,7 +18,7 @@ public final class Argon2BuilderTest {
     Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
                                        .type(Argon2id);
 
-    assertThatThrownBy(() -> builder.memoryCost(-1))
+    assertThatThrownBy(() -> builder.memoryCostKiB(-1))
       .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
@@ -27,29 +27,29 @@ public final class Argon2BuilderTest {
     Argon2.Builder builder = new Argon2.Builder(Version.LATEST)
                                        .type(Argon2id);
 
-    assertThatThrownBy(() -> builder.memoryCost(31))
+    assertThatThrownBy(() -> builder.memoryCostOrder(31))
       .isExactlyInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void using_memory_constants() throws Argon2Exception {
+  public void using_MemoryCost() throws Argon2Exception {
     String hash1 = new Argon2.Builder(Version.V13)
                              .type(Argon2id)
-                             .memoryCost(MemoryCost.MiB_32)
+                             .memoryCost(MemoryCost.MiB(20))
                              .parallelism(1)
                              .iterations(1)
                              .build()
                              .hash(utf8("signal"), utf8("somesalt"))
-                             .getHashHex();
+                             .getEncoded();
 
     String hash2 = new Argon2.Builder(Version.V13)
                              .type(Argon2id)
-                             .memoryCost(15)
+                             .memoryCostKiB(20 * 1024)
                              .parallelism(1)
                              .iterations(1)
                              .build()
                              .hash(utf8("signal"), utf8("somesalt"))
-                             .getHashHex();
+                             .getEncoded();
 
     assertEquals(hash1, hash2);
   }

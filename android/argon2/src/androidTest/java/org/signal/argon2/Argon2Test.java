@@ -159,7 +159,7 @@ public final class Argon2Test {
     Argon2 argon2 = new Argon2.Builder(version)
                               .type(type)
                               .iterations(t)
-                              .memoryCost(m)
+                              .memoryCostKiB(1 << m)
                               .parallelism(p)
                               .hashLength(32)
                               .build();
@@ -226,7 +226,7 @@ public final class Argon2Test {
   public void memory_too_little() {
     Argon2 argon2 = new Argon2.Builder(Version.LATEST)
                               .type(Argon2id)
-                              .memoryCost(2)
+                              .memoryCostOrder(2)
                               .build();
 
     assertThatThrownBy(() -> argon2.hash(ascii("password"), ascii("diffsalt")))
