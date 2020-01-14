@@ -1,5 +1,5 @@
 LOCAL_DIR := $(call my-dir)
-ARGON2_DIR := $(LOCAL_DIR)/../../phc-winner-argon2
+ARGON2_DIR := $(LOCAL_DIR)/../../../phc-winner-argon2
 
 include $(CLEAR_VARS)
 
