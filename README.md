@@ -13,9 +13,9 @@ implementation 'org.signal:argon2:13.0@aar'
 ```java
 Argon2 argon2 = new Argon2.Builder(Version.V13)
                           .type(Type.Argon2id)
-                          .memoryCost(MemoryCost.MiB_32)
+                          .memoryCost(MemoryCost.MiB(32))
                           .parallelism(1)
-                          .iterations(1)
+                          .iterations(3)
                           .build();
                           
                           
