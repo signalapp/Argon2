@@ -7,7 +7,7 @@ Android Usage
 --
 
 ```gradle
-implementation 'org.signal:argon2:13.0'
+implementation 'org.signal:argon2:13.0@aar'
 ```
 
 ```java
