@@ -1,0 +1,76 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version            = '13.0-SNAPSHOT'
+group              = 'org.signal'
+archivesBaseName   = 'argon2'
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+def getReleaseRepositoryUrl() {
+    return hasProperty('sonatypeRepo') ? sonatypeRepo
+            : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+}
+
+def getRepositoryUsername() {
+    return hasProperty('whisperSonatypeUsername') ? whisperSonatypeUsername : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty('whisperSonatypePassword') ? whisperSonatypePassword : ""
+}
+
+signing {
+    required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: getReleaseRepositoryUrl()) {
+            authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+        }
+
+        pom.project {
+            name archivesBaseName
+            description 'Argon2 Android library wrapping https://github.com/P-H-C/phc-winner-argon2'
+            url 'https://github.com/signalapp/argon2'
+
+            scm {
+                url 'scm:git@github.com:signalapp/argon2.git'
+                connection 'scm:git@github.com:signalapp/argon2.git'
+                developerConnection 'scm:git@github.com:signalapp/argon2.git'
+            }
+
+            licenses {
+                license {
+                    name 'GPLv3'
+                    url 'https://www.gnu.org/licenses/gpl-3.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    name 'Alan Evans'
+                }
+            }
+        }
+    }
+}
+
+task installArchives(type: Upload) {
+    group 'Deploy'
+    description 'Installs the artifacts to the local Maven repository.'
+    configuration = configurations['archives']
+    repositories {
+        mavenDeployer {
+            repository url: "file://${System.properties['user.home']}/.m2/repository"
+        }
+    }
+}

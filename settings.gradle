@@ -1,2 +1,3 @@
-include ':app'
-rootProject.name='Argon2TestBench'
+include ':android'
+include ':android:argon2'
+rootProject.name='Argon2Android'
