@@ -25,3 +25,24 @@ byte[] hash    = result.getHash();
 String hashHex = result.getHashHex();
 String encoded = result.getEncoded();
 ```
+
+iOS Usage
+--
+
+Add the following line to your Podfile:
+
+```ruby
+pod 'Argon2', git: 'https://github.com/signalapp/Argon2.git'
+```
+
+```swift
+let (rawHash, encodedHash) = Argon2.hash(
+    iterations: 1,
+    memoryInKiB: 32 * 1024,
+    threads: 1,
+    password: password,
+    salt: salt,
+    desiredLength: 32,
+    variant: .id
+)
+```
