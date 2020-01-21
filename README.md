@@ -43,6 +43,7 @@ let (rawHash, encodedHash) = Argon2.hash(
     password: password,
     salt: salt,
     desiredLength: 32,
-    variant: .id
+    variant: .id,
+    version: .v13
 )
 ```
