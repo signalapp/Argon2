@@ -1,9 +1,7 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 #include "org_signal_argon2_Argon2Native.h"
 #include "argon2.h"
-
-#define ENCODED_LEN 512
 
 #define SIGNAL_ERROR_NULL_INPUT        -100
 #define SIGNAL_ERROR_BUFFER_ALLOCATION -101
@@ -26,31 +24,33 @@ JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_hash
   if (jSalt == NULL) return SIGNAL_ERROR_NULL_INPUT;
   if (jHash == NULL) return SIGNAL_ERROR_NULL_INPUT;
 
-  char encoded[ENCODED_LEN];
+  jsize pwd_size  = (*env)->GetArrayLength(env, jPwd);
+  jsize salt_size = (*env)->GetArrayLength(env, jSalt);
+  jsize hash_size = (*env)->GetArrayLength(env, jHash);
 
-  jsize  pwd_size     = (*env)->GetArrayLength(env, jPwd);
-  jsize  salt_size    = (*env)->GetArrayLength(env, jSalt);
-  jsize  hash_size    = (*env)->GetArrayLength(env, jHash);
-
+  char * encoded      = NULL;
   jbyte* pwdElements  = NULL;
   jbyte* saltElements = NULL;
   jbyte* hashElements = NULL;
 
-                            pwdElements  = (*env)->GetByteArrayElements(env, jPwd,  NULL);
-  if (pwdElements  != NULL) saltElements = (*env)->GetByteArrayElements(env, jSalt, NULL);
-  if (saltElements != NULL) hashElements = (*env)->GetByteArrayElements(env, jHash, NULL);
+  const int encoded_size = jEncoded == NULL ? 0 : 512;
 
-  int result = pwdElements == NULL || saltElements == NULL || hashElements == NULL
+  if (encoded_size > 0)                     encoded      = (char *) malloc(encoded_size);
+  if (encoded_size == 0 || encoded != NULL) pwdElements  = (*env)->GetByteArrayElements(env, jPwd,  NULL);
+  if (pwdElements                  != NULL) saltElements = (*env)->GetByteArrayElements(env, jSalt, NULL);
+  if (saltElements                 != NULL) hashElements = (*env)->GetByteArrayElements(env, jHash, NULL);
+
+  int result = (encoded_size > 0 && encoded == NULL) || pwdElements == NULL || saltElements == NULL || hashElements == NULL
                ? SIGNAL_ERROR_BUFFER_ALLOCATION
                : argon2_hash(t, m, parallelism,
                              pwdElements,  pwd_size,
                              saltElements, salt_size,
                              hashElements, hash_size,
-                             encoded, ENCODED_LEN,
+                             encoded, encoded_size,
                              argon_type,
                              version);
 
-  if (result == ARGON2_OK && jEncoded != NULL) {
+  if (result == ARGON2_OK && jEncoded != NULL && encoded != NULL) {
     jclass    stringBufferClass = (*env)->GetObjectClass(env, jEncoded);
     jmethodID appendMethod      = (*env)->GetMethodID(env, stringBufferClass, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
 
@@ -64,6 +64,7 @@ JNIEXPORT jint JNICALL Java_org_signal_argon2_Argon2Native_hash
   if (pwdElements  != NULL) (*env)->ReleaseByteArrayElements(env, jPwd,  pwdElements,  JNI_ABORT);
   if (saltElements != NULL) (*env)->ReleaseByteArrayElements(env, jSalt, saltElements, JNI_ABORT);
   if (hashElements != NULL) (*env)->ReleaseByteArrayElements(env, jHash, hashElements, result == ARGON2_OK ? 0 : JNI_ABORT);
+  if (encoded      != NULL) free(encoded);
 
   return result;
 }
