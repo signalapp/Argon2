@@ -32,25 +32,16 @@ public final class Argon2BuilderTest {
   }
 
   @Test
-  public void using_MemoryCost() throws Argon2Exception {
+  public void using_MemoryCost_object() throws Argon2Exception {
     String hash1 = new Argon2.Builder(Version.V13)
                              .type(Argon2id)
-                             .memoryCost(MemoryCost.MiB(20))
+                             .memoryCost(MemoryCost.MiB(32))
                              .parallelism(1)
                              .iterations(1)
                              .build()
                              .hash(utf8("signal"), utf8("somesalt"))
                              .getEncoded();
 
-    String hash2 = new Argon2.Builder(Version.V13)
-                             .type(Argon2id)
-                             .memoryCostKiB(20 * 1024)
-                             .parallelism(1)
-                             .iterations(1)
-                             .build()
-                             .hash(utf8("signal"), utf8("somesalt"))
-                             .getEncoded();
-
-    assertEquals(hash1, hash2);
+    assertEquals(hash1, "$argon2id$v=19$m=32768,t=1,p=1$c29tZXNhbHQ$5d38aTyOwp6kx3ALaN/k04OsQ98uO6FRLo5XYsy9gZ4");
   }
 }

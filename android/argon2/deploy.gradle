@@ -1,7 +1,7 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version            = '13.0'
+version            = '13.1-SNAPSHOT'
 group              = 'org.signal'
 archivesBaseName   = 'argon2'
 
