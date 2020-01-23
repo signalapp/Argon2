@@ -13,4 +13,14 @@ public enum Type {
   Type(int nativeValue) {
     this.nativeValue = nativeValue;
   }
+
+  public static Type fromEncoded(String encoded) throws UnknownTypeException {
+    if (encoded == null) throw new IllegalArgumentException();
+
+    if (encoded.startsWith("$argon2id$")) return Argon2id;
+    if (encoded.startsWith("$argon2i$" )) return Argon2i;
+    if (encoded.startsWith("$argon2d$" )) return Argon2d;
+
+    throw new UnknownTypeException();
+  }
 }
