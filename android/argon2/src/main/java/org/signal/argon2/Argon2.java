@@ -20,8 +20,24 @@ public final class Argon2 {
     this.version         = builder.version;
   }
 
+  /**
+   * Finds the type from the encoded hash.
+   * @param encoded
+   * @param password
+   * @return
+   * @throws UnknownTypeException If it cannot determine the type from the encoded hash.
+   */
+  public static boolean verify(String encoded, byte[] password) throws UnknownTypeException {
+    return verify(encoded, password, Type.fromEncoded(encoded));
+  }
+
   public static boolean verify(String encoded, byte[] password, Type type) {
-    return Argon2Native.verify(encoded, password, type.nativeValue) == Argon2Native.OK;
+    if (encoded  == null) throw new IllegalArgumentException();
+    if (password == null) throw new IllegalArgumentException();
+
+    byte[] defensivePasswordCopy = password.clone();
+
+    return Argon2Native.verify(encoded, defensivePasswordCopy, type.nativeValue) == Argon2Native.OK;
   }
 
   public static class Builder {
@@ -103,15 +119,21 @@ public final class Argon2 {
   }
 
   public Result hash(byte[] password, byte[] salt) throws Argon2Exception {
-    StringBuffer encoded = new StringBuffer();
-    byte[]       hash    = new byte[hashLength];
-    int          result  = Argon2Native.hash(tCostIterations, mCostKiB, parallelism,
-                                             password,
-                                             salt,
-                                             hash,
-                                             encoded,
-                                             type.nativeValue,
-                                             version.nativeValue);
+    if (salt     == null) throw new IllegalArgumentException();
+    if (password == null) throw new IllegalArgumentException();
+
+    StringBuffer encoded               = new StringBuffer();
+    byte[]       hash                  = new byte[hashLength];
+    byte[]       defensivePasswordCopy = password.clone();
+    byte[]       defensiveSaltCopy     = salt.clone();
+
+    int result = Argon2Native.hash(tCostIterations, mCostKiB, parallelism,
+                                   defensivePasswordCopy,
+                                   defensiveSaltCopy,
+                                   hash,
+                                   encoded,
+                                   type.nativeValue,
+                                   version.nativeValue);
 
     if (result != Argon2Native.OK) {
       throw new Argon2Exception(result, Argon2Native.resultToString(result));
