@@ -32,7 +32,7 @@ iOS Usage
 Add the following line to your Podfile:
 
 ```ruby
-pod 'Argon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true
+pod 'SignalArgon2'
 ```
 
 ```swift

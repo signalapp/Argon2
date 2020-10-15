@@ -7,8 +7,8 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = "Argon2"
-  s.version          = "1.3.0"
+  s.name             = "SignalArgon2"
+  s.version          = "1.3.1"
   s.summary          = "A Swift wrapper around the reference Argon2 implementation."
 
   s.description      = <<-DESC
