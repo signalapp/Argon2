@@ -212,9 +212,8 @@ public class Argon2 {
     /// - Returns: `true` if the password is valid.
     /// - Throws: `Argon2.Error` if the input parameters are invalid or verification fails.
     public static func verify(encoded: String, password: Data, variant: Variant) throws -> Bool {
-        let encodedBytes = encoded.withCString { $0 }
         let passwordBytes = password.withUnsafeBytes { [UInt8]($0) }
-        let result = argon2_verify(encodedBytes, passwordBytes, passwordBytes.count, variant.argon2type)
+        let result = argon2_verify(encoded, passwordBytes, passwordBytes.count, variant.argon2type)
 
         let argonError = Argon2_ErrorCodes(rawValue: result)
         switch argonError {
