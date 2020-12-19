@@ -1,6 +1,6 @@
 import Foundation
 
-public class Argon2 {
+public enum Argon2 {
     public enum Error: LocalizedError, Equatable {
         case assertion(rawError: Int32)
 
